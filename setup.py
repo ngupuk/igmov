@@ -6,7 +6,7 @@ def read_file(filename):
 
 setup(
     name='igmov',
-    version='1.0.1',
+    version='0.0.0-alpha',
     description='Video generator using Ngupuk templates',
     long_description= read_file('README.md'),
     long_description_content_type='text/markdown',
