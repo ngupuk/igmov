@@ -2,3 +2,4 @@
 sample/result.*
 dist
 igmov.egg-info
+*/__pycache__/*
