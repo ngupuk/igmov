@@ -5,16 +5,7 @@ def read_file(filename):
         return file.read()
 
 setup(
-    name='igmov',
-    version='0.0.0-alpha',
-    description='Video generator using Ngupuk templates',
-    long_description= read_file('README.md'),
-    long_description_content_type='text/markdown',
-    license='MIT',
     packages=['igmov'],
-    author='Ngupuk',
-    author_email='wafax.4@gmail.com',
-    url='https://github.com/ngupuk/igmov',
     install_requires = [
         'moviepy', 'urllib3'
     ]
