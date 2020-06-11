@@ -1,2 +1,4 @@
 */__temp__*
 sample/result.*
+*/__pycache__/*
+*/.ipynb_checkpoints/*
