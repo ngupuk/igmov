@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 
 audioPath = '../sample/sample.ogg'
 thumbPath = '../sample/thumb.jpg'
-audio = mpy.AudioFileClip(audioPath)
+audio = AudioFileClip(audioPath)
 sound = audio.to_soundarray()
 
 fps = 24
@@ -22,5 +22,12 @@ def get_sound(t):
   freqs = np.fft.fftfreq(length)
   return abs(hasil[:length//2])
 
-# plt.plot(get_sound(2))
+def interpolate(signal, count=100):
+  spectrum = signal
+  xlog = np.log(np.array(range(1, spectrum.shape[0]+1)))
+  xnew = np.linspace(np.min(xlog), np.max(xlog), count)
+  newspectrum = np.interp(xnew, xlog, spectrum)
+  return newspectrum
+# plt.plot(xlog, get_sound(2))
+plt.plot(newspectrum)
 # sr
