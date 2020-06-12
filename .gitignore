@@ -1,4 +1,6 @@
 */__temp__*
 sample/result.*
+dist
+igmov.egg-info
 */__pycache__/*
 */.ipynb_checkpoints/*
