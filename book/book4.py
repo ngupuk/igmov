@@ -2,34 +2,46 @@
 import numpy as np
 import moviepy.editor as mpy
 import cv2
+import igmov.analizer
 
-audioPath = './sample/sample.ogg'
-thumbPath = './sample/thumb.jpg'
+audioPath = '../sample/sample.ogg'
+thumbPath = '../sample/thumb.jpg'
 
 # %%
 audio = mpy.AudioFileClip(audioPath)
 thumb = mpy.ImageClip(thumbPath).set_duration(audio.duration)
 sound = audio.to_soundarray()
 fps = 24
+sr = sound.shape[0]/audio.duration
 img_raw = cv2.imread(thumbPath)
 img_raw = cv2.resize(img_raw, (400, 400))
 
 def get_sound(t):
-  factor = (sound.shape[0]/audio.duration)/fps 
-  # start = ( t - (1/factor)) * factor
-  # start = 0 if start < 0 else start
-  end = t * factor
-  end = (t + 1) * factor if t == 0 else end
-  start = end - factor
-  start = 0 if start < 0 else start
-  temp_sound = sound[int(start):int(end),0]
-  return temp_sound
+  length = 255
+  end = sr * t
+  start = end - (sr/fps)
+  start = 0 if start<0 else start
+  L = sound[int(start):int(end), 0]
+  # ax.set_xscale('log')
+  ax.set_ylim(0, 10)
+  hasil = np.fft.fft(L, length)
+  freqs = np.fft.fftfreq(length)
+  return abs(hasil[:length//2])
 
-
+import matplotlib.pyplot as plt
+fig, ax = plt.subplots(1)
 from moviepy.video.io.bindings import mplfig_to_npimage
+# fig.set_dpi()
 def generator(t):
   # img = img_raw.copy()
-  img = mplfig_to_npimage(get_signal(t))
+  # spectrum = igmov.analizer.Octave(get_sound(t))
+  ax.clear()
+  x = get_sound(t)
+  ax.semilogx(x[4:])
+  # ax.set_ylim(0, 200)
+  # x, y = spectrum.get_result()
+  # ax.plot(x[:21], y[:21])
+  img = mplfig_to_npimage(fig)
   # temp_sound = get_sound(t)
   # norm = int(np.average(np.abs(temp_sound)) * 200 / np.max(temp_sound))
   # # norm = temp_sound.shape
@@ -40,11 +52,12 @@ def generator(t):
   # img = cv2.putText(img, str(norm), (50, 50), font, 1, (255, 54, 2))
   return img
 
-# video = mpy.VideoClip(
-#           generator, 
-#           duration=audio.duration,
-#           )
-# video.audio = audio
+video = mpy.VideoClip(
+          generator, 
+          duration=audio.duration,
+          )
+video.audio = audio
+video.write_videofile('../sample/result.mp4', fps=fps)
 # clip = mpy.CompositeVideoClip([video])
 # clip.write_videofile('result.mp4', fps=fps)
 
@@ -52,6 +65,8 @@ def generator(t):
 import matplotlib.pyplot as plt
 fig, ax = plt.subplots(1)
 fig.set_dpi(10)
+# %%
+generator(5)
 
 # %%
 fig, ax = plt.subplots(1)
