@@ -10,11 +10,11 @@ def spectrum(img, data, x, y, color=[255, 255, 255],
 
   img = np.array(img).copy()
   for i, l in enumerate(data):
-    l = l * factor
-    if (max_length != None):
-      tall = int(l) if int(l) < max_length else max_length
+    ln = l * factor
+    if (max_length is not None):
+      tall = int(ln) if int(ln) < max_length else max_length
     else:
-      tall = int(l)
+      tall = int(ln)
 
     if (direction == 'bottom'):
       c0 = y

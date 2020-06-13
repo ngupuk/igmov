@@ -7,4 +7,3 @@ class Template1:
     import moviepy.editor as MP
     self.__MP = MP
     self.audio = self.__MP.AudioFileClip(audio)
-    
