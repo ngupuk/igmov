@@ -5,8 +5,5 @@ def read_file(filename):
         return file.read()
 
 setup(
-    packages=['igmov'],
-    install_requires = [
-        'moviepy', 'urllib3'
-    ]
+    packages=['igmov', 'igmov.template']
 )
