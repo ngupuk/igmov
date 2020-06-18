@@ -1,7 +1,7 @@
-*/__temp__*
+**/__temp__*
 sample/result.*
 dist
 igmov.egg-info
-*/__pycache__/*
+**/__pycache__/**
 */.ipynb_checkpoints/*
 build
