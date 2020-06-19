@@ -5,4 +5,4 @@
 
 Video Editing Program for Podcast Preview
 
-Inprogress
+- [Documentation](https://github.com/ngupuk/igmov/wiki) : language Indonesian
