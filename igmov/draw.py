@@ -1,4 +1,10 @@
 def fullCicrle(pos, image, data):
+  """
+  Draw full cirlcle spectrum.
+  :param pos: (x, y, r) - position and radius of the circle
+  :param image: PIL.Image - image to draw
+  :param data: 1D array - spectrum data
+  """
   from PIL import ImageDraw
   import numpy as np
   im = image.copy()
@@ -13,6 +19,12 @@ def fullCicrle(pos, image, data):
 
 
 def halfCicrle(pos, image, data):
+  """
+  Draw half circle spectrum clockwise.
+  :param pos: (x, y, r) - position and radius of the circle
+  :param image: PIL.Image - image to draw
+  :param data: 1D array - spectrum data
+  """
   from PIL import ImageDraw
   import numpy as np
   im = image.copy()
@@ -27,6 +39,12 @@ def halfCicrle(pos, image, data):
 
 
 def halfCicrleF(pos, image, data):
+  """
+  Draw half circle spectrum conter clockwise.
+  :param pos: (x, y, r) - position and radius of the circle
+  :param image: PIL.Image - image to draw
+  :param data: 1D array - spectrum data
+  """
   from PIL import ImageDraw
   import numpy as np
   im = image.copy()
@@ -41,6 +59,15 @@ def halfCicrleF(pos, image, data):
 
 
 def line(pos, image, data, scale=1, spacing=3, mode='dual'):
+  """
+  Draw spectrum bars.
+  :param pos: (x, y) - position of spectrum on image
+  :param image: PIL.image - image to draw
+  :param data: 1D array - spectrum data
+  :param scale: number - scaling of bar lenght
+  :param spacing: int - spacing between bars
+  :param mode: dual | bottom | up - direction of bars
+  """
   from PIL import ImageDraw
   im = image.copy()
   x, y = pos
@@ -61,6 +88,16 @@ def line(pos, image, data, scale=1, spacing=3, mode='dual'):
 
 
 def lineSpectrum(pos, image, data, width, scale=1, spacing=3, mode="dual"):
+  """
+  Draw sepectrum bars.
+  :param pos: (x, y) - position of spectrum bars on image
+  :param image: PIL.Image - image to draw
+  :param data: 1D array - sound data
+  :param width: int - widht of spectrum on image
+  :param scale: number - scaling of bars length
+  :param spacing: int - spacing between bars
+  :param mode: dual | bottom | up - direction of bars
+  """
   from . import analyzer as anl
   count = int(width // spacing)
   spectrum_data = anl.fft(data, count)
@@ -68,6 +105,11 @@ def lineSpectrum(pos, image, data, width, scale=1, spacing=3, mode="dual"):
 
 
 def blackMask(image, alpha=.5):
+  """
+  Draw black mask on image.
+  :param image: PIL.Image - image to draw
+  :param alpha: float - black mask intensity (0 - 1)
+  """
   from PIL import Image
   mask = Image.new('RGB', image.size)
   im = Image.blend(image, mask, alpha)
