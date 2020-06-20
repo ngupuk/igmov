@@ -17,6 +17,9 @@ class template1(object):
   _showSpotify = False
 
   def show(self):
+    """
+    Get PIL.Image of the first frame.
+    """
     return self._gen()
 
   def _gen(self):
@@ -47,20 +50,35 @@ class template1(object):
     self._img = bg
 
   def setBg(self, path):
+    """
+    Set background image from local image file.
+    :param path: string - path of the image source
+    """
     bg = self._pil.Image.open(path)
     self._bg = bg.resize(self._bg.size, self._pil.Image.ANTIALIAS)
     return self
 
   def setTitle(self, text):
+    """
+    Set video title.
+    :param text: string - video title
+    """
     self._title = text
     return self
 
   def setLogo(self, path):
+    """
+    Set logo from local storage.
+    :param path: string - path of the logo source
+    """
     logo = self._pil.Image.open(path)
     self._logo = logo.resize(self._logo.size, self._pil.Image.ANTIALIAS)
     return self
 
   def showSpotify(self):
+    """
+    Show Spotify's Logo on frame.
+    """
     splogoPath = '__temp__.spotify_light.png'
     try:
       splogo = self._pil.Image.open(splogoPath)
@@ -73,6 +91,9 @@ class template1(object):
     return self
 
   def useNgupukLogo(self):
+    """
+    Use Ngupuk's logo. Automatic download from internet.
+    """
     ngupukLogoPath = '__temp__.ngupuk.jpg'
     try:
       ngLogo = self._pil.Image.open(ngupukLogoPath)
@@ -84,6 +105,10 @@ class template1(object):
     return self
 
   def useRandomBg(self, keyword):
+    """
+    Use random backgroun from unsplash.
+    :param keyword: string - keyword of the image
+    """
     bgpath = "__temp__.bg_%s.jpg" % keyword
     try:
       bg = self._pil.Image.open(bgpath)
@@ -95,6 +120,11 @@ class template1(object):
     return self
 
   def makeVideo(self, audioPath, resultPath):
+    """
+    Make video file
+    :param audioPath: string - path of audio source.
+    :param resultPath: string - path of video result.
+    """
     self._gen()
     anl = self._anl
     im = self._img.copy()
@@ -136,6 +166,11 @@ class template2(template1):
     return self._img
 
   def makeVideo(self, audioPath, resultPath):
+    """
+    Make video file
+    :param audioPath: string - path of audio source.
+    :param resultPath: string - path of video result.
+    """
     self._gen()
     img = self._img.copy()
     sound, sr, fps, duration, audio = self._anl.getAudioData(audioPath)
