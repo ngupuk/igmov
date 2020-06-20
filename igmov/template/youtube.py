@@ -1,13 +1,13 @@
-
+# %%
 class Template1():
   import numpy as _np
   import PIL.Image as _pilImage
   import PIL.ImageDraw as _imgDraw
   import PIL.ImageFont as _imgFont
   import PIL.ImageFilter as _imgFilter
-  import igmov.analyzer as _anl
-  import igmov.draw as _drw
-  import igmov.dl as _dl
+  from igmov import analyzer as _anl
+  from igmov import draw as _drw
+  from igmov import dl as _dl
   from moviepy.editor import VideoClip as _vc
 
   _img = _pilImage.new('RGB', (1080, 600))
@@ -128,17 +128,23 @@ class Template1():
     self._gen()
     sound, sr, fps, duration, audio = self._anl.getAudioData(audioPath)
     L, _ = self._anl.extract(sound)
+    font = self._imgFont.truetype('calibri.ttf', 14)
+
     def generator(t):
+      m, d = (t // 60, t % 60)
       im = self._img.copy()
+      drw = self._imgDraw.Draw(im)
+      drw.text((890, 260), "%02i:%02i"%(m, d), font=font)
       data = self._anl.getSound(t, L, sr, fps)
       im = self._drw.lineSpectrum(
-        (330, 260),
-        im,
-        data,
-        600,
-        mode='bottom',
-        scale=2,
-        spacing=4)
+          (330, 310),
+          im,
+          data,
+          600,
+          mode='bottom',
+          scale=2,
+          spacing=4)
+      im = self._drw.progressBar((328, 280), im, 600, t / duration)
       return self._np.array(im)
     clip = self._vc(generator, duration=duration)
     clip.audio = audio

@@ -114,3 +114,27 @@ def blackMask(image, alpha=.5):
   mask = Image.new('RGB', image.size)
   im = Image.blend(image, mask, alpha)
   return im
+
+
+def progressBar(pos, image, width, percent):
+  """
+  Draw proggress bar.
+  :param pos: (x, y) - position bars
+  :param image: PIL.Image - image to draw
+  :param width: int - widht progress bar
+  :param percent: float - percentage of proggres (0 - 1)
+  """
+  from PIL import Image, ImageDraw
+  image = image.copy()
+  im = Image.new('RGBA', (width, 20))
+  gray = (255, 255, 255, 100)
+  drw = ImageDraw.Draw(im)
+  drw.rectangle((10, 2, width - 10, 18), fill=gray)
+  drw.ellipse((2, 2, 18, 18), fill=gray)
+  drw.ellipse((width - 22, 2, width - 2, 18), fill=gray)
+  drw.ellipse((5, 5, 15, 15), fill='white')
+  drw.rectangle((10, 5, 10 + (width - 20) * percent, 15), fill='white')
+  endPos = (5 + (width - 20) * percent, 5, 15 + (width - 20) * percent, 15)
+  drw.ellipse(endPos, fill='white')
+  image.paste(im, pos, im)
+  return image
