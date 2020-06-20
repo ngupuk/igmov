@@ -1,4 +1,3 @@
-# %%
 class Template1():
   import numpy as _np
   import PIL.Image as _pilImage
@@ -131,13 +130,13 @@ class Template1():
     font = self._imgFont.truetype('calibri.ttf', 14)
 
     def generator(t):
-      m, d = (t // 60, t % 60)
+      time = (t // 60, t % 60)
       im = self._img.copy()
       drw = self._imgDraw.Draw(im)
-      drw.text((890, 260), "%02i:%02i"%(m, d), font=font)
+      drw.text((890, 260), "%02i:%02i" % time, font=font)
       data = self._anl.getSound(t, L, sr, fps)
       im = self._drw.lineSpectrum(
-          (330, 310),
+          (330, 300),
           im,
           data,
           600,

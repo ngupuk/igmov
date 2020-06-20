@@ -126,15 +126,15 @@ def progressBar(pos, image, width, percent):
   """
   from PIL import Image, ImageDraw
   image = image.copy()
-  im = Image.new('RGBA', (width, 20))
+  im = Image.new('RGBA', (width + 5, 15))
   gray = (255, 255, 255, 100)
   drw = ImageDraw.Draw(im)
-  drw.rectangle((10, 2, width - 10, 18), fill=gray)
-  drw.ellipse((2, 2, 18, 18), fill=gray)
-  drw.ellipse((width - 22, 2, width - 2, 18), fill=gray)
-  drw.ellipse((5, 5, 15, 15), fill='white')
-  drw.rectangle((10, 5, 10 + (width - 20) * percent, 15), fill='white')
-  endPos = (5 + (width - 20) * percent, 5, 15 + (width - 20) * percent, 15)
+  drw.rectangle((5, 0, width - 5, 10), fill=gray)
+  drw.ellipse((0, 0, 10, 10), fill=gray)
+  drw.ellipse((width - 10, 0, width, 10), fill=gray)
+  drw.ellipse((2, 2, 8, 8), fill='white')
+  drw.rectangle((5, 2, 5 + (width - 10) * percent, 8), fill='white')
+  endPos = ((width - 10) * percent + 2, 2, (width - 10) * percent + 8, 8)
   drw.ellipse(endPos, fill='white')
   image.paste(im, pos, im)
   return image
