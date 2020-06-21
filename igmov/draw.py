@@ -138,3 +138,17 @@ def progressBar(pos, image, width, percent):
   drw.ellipse(endPos, fill='white')
   image.paste(im, pos, im)
   return image
+
+
+def rectangleFillCrop(image):
+  """
+  Make image in rectangle shape using fill crop.
+  :param image: PIL.Image - image source
+  """
+  image = image.copy()
+  x, y = image.size
+  n = min(image.size)
+  x1 = 0 if x == n else (x - n) // 2
+  y1 = 0 if y == n else (y - n) // 2
+  image = image.crop((x1, y1, n + x1, n + y1))
+  return image
