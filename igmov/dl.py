@@ -47,3 +47,14 @@ def spotifyLogoDark(path="spotify_dark.png"):
   """
   url = "https://storage.googleapis.com/pr-newsroom-wp/1/2018/11/Spotify_Logo_RGB_Black.png"
   return getFile(url, path)
+
+
+def pathUrl(path, url):
+  """Get file path or download before it if not exist.
+  :param path: string - path of file
+  :param url: string - url to download
+  """
+  import os.path
+  if not os.path.exists(path):
+    getFile(url, path)
+  return path
