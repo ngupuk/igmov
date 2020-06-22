@@ -1,4 +1,3 @@
-# %%
 
 class Igtv1():
   import PIL.Image as _Img
@@ -15,6 +14,17 @@ class Igtv1():
   _bg = _Img.new('RGB', _img.size)
   _logo = _Img.new('RGB', (180, 180))
   _title = ""
+
+  def show(self):
+    """
+    Get PIL.Image of the first frame.
+    """
+    return self._gen()
+
+  def setBg(self, path):
+    im = self._Img.open(path)
+    self._bg = im.resize(self._bg.size, self._Img.ANTIALIAS)
+    return self
 
   def useRandomBg(self, keyword):
     path = '__temp__.bg_%s.jpg' % keyword
@@ -56,6 +66,11 @@ class Igtv1():
     self._img = bg
     return self._img
 
+  def setLogo(self, path):
+    im = self._Img.open(path)
+    self._logo = im.resize(self._logo.size, self._Img.ANTIALIAS)
+    return self
+
   def useNgupukLogo(self):
     path = '__temp__.ngupuk.jpg'
     try:
@@ -86,10 +101,3 @@ class Igtv1():
     clip.audio = audio
     clip.write_videofile(resultPath, fps=fps)
     return True
-
-
-base = (Igtv1()
-        .useRandomBg('nature')
-        .setTitle('012 Hack Sosial Media')
-        .useNgupukLogo())
-base.makeVideo('012 ig.mp3', 'result.mp4')
