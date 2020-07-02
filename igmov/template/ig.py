@@ -12,8 +12,10 @@ class template1(object):
   _img = _pil.Image.new('RGB', (800, 800))
   _bg = _pil.Image.new('RGB', _img.size)
   _logo = _pil.Image.new('RGB', (360, 360))
-  _splogo = _pil.Image.new('RGBA', (200, 60))
+  _splogo = _pil.Image.new('RGBA', (125, 35))
   _title = ""
+  _username = ""
+  _igLogo = _pil.Image.new('RGBA', (35, 35))
   _showSpotify = False
 
   def show(self):
@@ -47,6 +49,16 @@ class template1(object):
     font = self._imgfont.truetype('calibri.ttf', 24)
     drw = self._imgdraw.Draw(self._img)
     drw.text((x, y), self._title, font=font, fill='black')
+
+  def _drawIg(self):
+    x, y = self._img.size
+    y -= (self._igLogo.size[1] + 20)
+    x = 20
+    if(self._username):
+      font = self._imgfont.truetype('calibri.ttf', 24)
+      self._img.paste(self._igLogo, (x, y), self._igLogo)
+      drw = self._imgdraw.Draw(self._img)
+      drw.text((x + 40, y + 5), self._username, 'white', font)
     pass
 
   def _gen(self):
@@ -54,16 +66,17 @@ class template1(object):
     self._drawLogo()
     self._drawTitle()
     self._drawSpotify()
+    self._drawIg()
     return self._img
 
   def _drawSpotify(self):
     x, y = self._img.size
-    x -= 320
-    y -= 80
+    x -= self._splogo.size[0] + 120
+    y -= self._splogo.size[1] + 20
     bg = self._img
     if self._showSpotify:
       font = self._imgfont.truetype('calibri.ttf', 24)
-      self._imgdraw.Draw(bg).multiline_text((x, y + 18), "Listen On", font=font)
+      self._imgdraw.Draw(bg).multiline_text((x, y + 8), "Listen On", font=font)
       bg.paste(self._splogo, (x + 100, y), self._splogo)
     self._img = bg
 
@@ -120,6 +133,19 @@ class template1(object):
       ngLogo = self._pil.Image.open(ngupukLogoPath)
     ngLogo = ngLogo.resize(self._logo.size, self._pil.Image.ANTIALIAS)
     self._logo = ngLogo
+    return self
+
+  def useInstagramLogo(self, username='ngupuk.id'):
+    igLogoPath = '__temp__.ig.png'
+    try:
+      igLogo = self._pil.Image.open(igLogoPath)
+    except:
+      url = 'https://ngupuk.github.io/static/instagram.png'
+      self._igmdl.getFile(url, igLogoPath)
+      igLogo = self._pil.Image.open(igLogoPath)
+    igLogo = igLogo.resize(self._igLogo.size, self._pil.Image.ANTIALIAS)
+    self._username = username
+    self._igLogo = igLogo.convert('RGBA')
     return self
 
   def useRandomBg(self, keyword):
