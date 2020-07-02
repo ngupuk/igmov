@@ -9,11 +9,13 @@ class template1(object):
   from PIL import ImageDraw as _imgdraw
   from PIL import ImageFont as _imgfont
 
-  _img = _pil.Image.new('RGB', (400, 400))
-  _bg = _pil.Image.new('RGB', (400, 400))
-  _logo = _pil.Image.new('RGB', (180, 180))
-  _splogo = _pil.Image.new('RGBA', (100, 30))
+  _img = _pil.Image.new('RGB', (800, 800))
+  _bg = _pil.Image.new('RGB', _img.size)
+  _logo = _pil.Image.new('RGB', (360, 360))
+  _splogo = _pil.Image.new('RGBA', (125, 35))
   _title = ""
+  _username = ""
+  _igLogo = _pil.Image.new('RGBA', (35, 35))
   _showSpotify = False
 
   def show(self):
@@ -22,31 +24,60 @@ class template1(object):
     """
     return self._gen()
 
-  def _gen(self):
-    bg = self._bg.copy()
+  def _drawBg(self):
     blur = self._imgfilter.GaussianBlur(3)
-    bg = bg.filter(blur)
-    mask = self._pil.Image.new('RGB', bg.size)
-    bg = self._pil.Image.blend(bg, mask, .3)
-    mask = self._pil.Image.new('RGBA', bg.size)
-    self._imgdraw.Draw(mask).rectangle((105, 35, 310, 280), fill='black')
-    mask = mask.filter(self._imgfilter.GaussianBlur(5))
-    bg.paste(mask, (0, 0), mask)
-    drw = self._imgdraw.Draw(bg)
-    drw.rectangle((100, 30, 300, 270), fill='white')
-    bg.paste(self._logo, (110, 40))
-    font = self._imgfont.truetype('calibri.ttf', 13)
-    drw.multiline_text((110, 230), self._title, font=font, fill="black")
-    self._img = bg
+    img = self._bg.filter(blur)
+    self._img.paste(img, (0, 0))
+    self._img = self._igmdraw.blackMask(self._img)
+
+  def _drawLogo(self):
+    x, y = 200, 100
+    logo = self._logo.copy()
+    lx, ly = logo.size
+    mask = self._pil.Image.new('RGBA', self._img.size)
+    drw = self._imgdraw.Draw(mask)
+    drw.rectangle((x + 40, y + 40, x + lx + 40, y + ly + 120), fill='black')
+    blur = self._imgfilter.GaussianBlur(10)
+    mask = mask.filter(blur)
+    drw = self._imgdraw.Draw(mask)
+    drw.rectangle((x, y, x + lx + 20, y + ly + 90), fill='white')
+    mask.paste(logo, (x + 10, y + 10))
+    self._img.paste(mask, (0, 0),  mask)
+
+  def _drawTitle(self):
+    x, y = 215, 480
+    font = self._imgfont.truetype('calibri.ttf', 24)
+    drw = self._imgdraw.Draw(self._img)
+    drw.text((x, y), self._title, font=font, fill='black')
+
+  def _drawIg(self):
+    x, y = self._img.size
+    y -= (self._igLogo.size[1] + 20)
+    x = 20
+    if(self._username):
+      font = self._imgfont.truetype('calibri.ttf', 24)
+      self._img.paste(self._igLogo, (x, y), self._igLogo)
+      drw = self._imgdraw.Draw(self._img)
+      drw.text((x + 40, y + 5), self._username, 'white', font)
+    pass
+
+  def _gen(self):
+    self._drawBg()
+    self._drawLogo()
+    self._drawTitle()
     self._drawSpotify()
+    self._drawIg()
     return self._img
 
   def _drawSpotify(self):
+    x, y = self._img.size
+    x -= self._splogo.size[0] + 120
+    y -= self._splogo.size[1] + 20
     bg = self._img
     if self._showSpotify:
-      font = self._imgfont.truetype('calibri.ttf', 12)
-      self._imgdraw.Draw(bg).multiline_text((235, 370), "Listen On", font=font)
-      bg.paste(self._splogo, (400 - 110, 400 - 40), self._splogo)
+      font = self._imgfont.truetype('calibri.ttf', 24)
+      self._imgdraw.Draw(bg).multiline_text((x, y + 8), "Listen On", font=font)
+      bg.paste(self._splogo, (x + 100, y), self._splogo)
     self._img = bg
 
   def setBg(self, path):
@@ -104,6 +135,19 @@ class template1(object):
     self._logo = ngLogo
     return self
 
+  def useInstagramLogo(self, username='ngupuk.id'):
+    igLogoPath = '__temp__.ig.png'
+    try:
+      igLogo = self._pil.Image.open(igLogoPath)
+    except:
+      url = 'https://ngupuk.github.io/static/instagram.png'
+      self._igmdl.getFile(url, igLogoPath)
+      igLogo = self._pil.Image.open(igLogoPath)
+    igLogo = igLogo.resize(self._igLogo.size, self._pil.Image.ANTIALIAS)
+    self._username = username
+    self._igLogo = igLogo.convert('RGBA')
+    return self
+
   def useRandomBg(self, keyword):
     """
     Use random backgroun from unsplash.
@@ -133,8 +177,8 @@ class template1(object):
 
     def generator(t):
       sp_data = anl.getSound(t, L, sr, fps)
-      pos = (100, 278)
-      im2 = self._igmdraw.lineSpectrum(pos, im, sp_data, 200, mode='bottom')
+      pos = (200, 560)
+      im2 = self._igmdraw.lineSpectrum(pos, im, sp_data, 380, 2, 5, 'bottom')
       return self._np.array(im2)
 
     clip = self._vc(generator, duration=duration)
@@ -144,26 +188,26 @@ class template1(object):
 
 
 class template2(template1):
-  def _gen(self):
-    bg = self._bg
-    img = self._img
-    logo = self._logo
-    img.paste(bg, (0, 0))
-    img = img.filter(self._imgfilter.GaussianBlur(3))
-    img = self._igmdraw.blackMask(img, .5)
-    mask = self._pil.Image.new('RGBA', logo.size)
-    x, y = mask.size
-    self._imgdraw.Draw(mask).ellipse((5, 5, x - 5, y - 5), fill="white")
-    mask = mask.filter(self._imgfilter.GaussianBlur(3))
-    logoX, logoY = logo.size
-    img.paste(logo, (110, 80), mask)
-    font = self._imgfont.truetype('calibri.ttf', 20)
-    drw = self._imgdraw.Draw(img)
-    drw.multiline_text((20, 320), self._title, font=font, fill="white")
-    drw.line((20, 345, 90, 345), width=3)
-    self._img = img
-    self._drawSpotify()
-    return self._img
+
+  def _drawLogo(self):
+    x, y = self._img.size
+    sx, sy = self._logo.size
+    crop = 10
+    x = (x - sx) // 2
+    y = (y - sy) // 4
+    mask = self._pil.Image.new("RGBA", self._logo.size)
+    drw = self._imgdraw.Draw(mask)
+    drw.ellipse((crop, crop, sx - crop, sy - crop), fill='white')
+    blur = self._imgfilter.GaussianBlur(5)
+    mask = mask.filter(blur)
+    self._img.paste(self._logo, (x, y), mask)
+
+  def _drawTitle(self):
+    x, y = (30, 550)
+    font = self._imgfont.truetype('calibri.ttf', 40)
+    drw = self._imgdraw.Draw(self._img)
+    drw.text((x, y), self._title, 'white', font)
+    drw.line((x, y + 50, x + 100, y + 50), 'white', 5)
 
   def makeVideo(self, audioPath, resultPath):
     """
@@ -182,9 +226,10 @@ class template2(template1):
       Lfft = self._anl.fft(Ldata, 100)
       Rfft = self._anl.fft(Rdata, 100)
       im = img
-      im = self._igmdraw.halfCicrle((200, 170, 95), im, Lfft)
-      im = self._igmdraw.halfCicrleF((200, 170, 95), im, Rfft)
+      im = self._igmdraw.halfCicrle((400, 290, 180), im, Lfft * 2)
+      im = self._igmdraw.halfCicrleF((400, 290, 180), im, Rfft * 2)
       return self._np.array(im)
+
     clip = self._vc(generator, duration=duration)
     clip.audio = audio
     clip.write_videofile(resultPath, fps=fps)
