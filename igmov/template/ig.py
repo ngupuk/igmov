@@ -12,11 +12,12 @@ class template1(object):
   _img = _pil.Image.new('RGB', (800, 800))
   _bg = _pil.Image.new('RGB', _img.size)
   _logo = _pil.Image.new('RGB', (360, 360))
-  _splogo = _pil.Image.new('RGBA', (125, 35))
+  _splogo = _pil.Image.new('RGBA', (120, 35))
   _title = ""
   _username = ""
   _igLogo = _pil.Image.new('RGBA', (35, 35))
   _showSpotify = False
+  _fontName = 'calibri.ttf'
 
   def show(self):
     """
@@ -46,7 +47,7 @@ class template1(object):
 
   def _drawTitle(self):
     x, y = 215, 480
-    font = self._imgfont.truetype('calibri.ttf', 24)
+    font = self._imgfont.truetype(self._fontName, 24)
     drw = self._imgdraw.Draw(self._img)
     drw.text((x, y), self._title, font=font, fill='black')
 
@@ -55,7 +56,7 @@ class template1(object):
     y -= (self._igLogo.size[1] + 20)
     x = 20
     if(self._username):
-      font = self._imgfont.truetype('calibri.ttf', 24)
+      font = self._imgfont.truetype(self._fontName, 24)
       self._img.paste(self._igLogo, (x, y), self._igLogo)
       drw = self._imgdraw.Draw(self._img)
       drw.text((x + 40, y + 5), self._username, 'white', font)
@@ -75,7 +76,7 @@ class template1(object):
     y -= self._splogo.size[1] + 20
     bg = self._img
     if self._showSpotify:
-      font = self._imgfont.truetype('calibri.ttf', 24)
+      font = self._imgfont.truetype(self._fontName, 24)
       self._imgdraw.Draw(bg).multiline_text((x, y + 8), "Listen On", font=font)
       bg.paste(self._splogo, (x + 100, y), self._splogo)
     self._img = bg
@@ -186,6 +187,10 @@ class template1(object):
     clip.write_videofile(resultPath, fps=fps)
     return True
 
+  def setFont(self, name):
+    self._fontName = name
+    return self
+
 
 class template2(template1):
 
@@ -229,6 +234,63 @@ class template2(template1):
       im = self._igmdraw.halfCicrle((400, 290, 180), im, Lfft * 2)
       im = self._igmdraw.halfCicrleF((400, 290, 180), im, Rfft * 2)
       return self._np.array(im)
+
+    clip = self._vc(generator, duration=duration)
+    clip.audio = audio
+    clip.write_videofile(resultPath, fps=fps)
+    return True
+
+class template3(template1):
+
+  _fontName = 'Gabriola.ttf'
+  _logo2 = False
+
+  def _drawLogo(self):
+    x, y = (50, 200)
+    logo = self._logo.resize((250, 250), self._pil.Image.ANTIALIAS)
+    mask = self._pil.Image.new('RGBA', logo.size)
+    drw = self._imgdraw.Draw(mask)
+    drw.ellipse((5, 5, mask.size[0] - 5, mask.size[1] - 5), fill="white")
+    blur = self._imgfilter.GaussianBlur()
+    mask = mask.filter(blur)
+    self._img.paste(logo, (x, y), mask)
+    if(self._logo2):
+      pos = (x + 150, y + 150)
+      n = (100, 100)
+      mask = mask.resize(n)
+      self._img.paste(mask, pos, mask)
+      self._img.paste(self._logo2.resize(n), pos, mask)
+
+  def _drawTitle(self):
+    x, y = (330, 240)
+    titles = self._title.split('\n')
+    for i, title in enumerate(titles):
+      fontSize = 65 - i * 30
+      font = self._imgfont.truetype(self._fontName, fontSize)
+      drw = self._imgdraw.Draw(self._img)
+      drw.text((x, y + i * 60), title, 'white', font)
+
+  def makeVideo(self, audioPath, resultPath):
+    """
+    Make video file
+    :param audioPath: string - path of audio source.
+    :param resultPath: string - path of video result.
+    """
+    self._gen()
+    anl = self._anl
+    im = self._img.copy()
+    sound, sr, fps, duration, audio = anl.getAudioData(audioPath)
+    L, _ = anl.extract(sound)
+
+    def generator(t):
+      sp_data = anl.getSound(t, L, sr, fps)
+      pos = (40, 580)
+      im2 = self._igmdraw.lineSpectrum(pos, im, sp_data, 720, 1.5, 5)
+      im2 = self._igmdraw.progressBar((320, 380), im2, 350, t/duration)
+      font = self._imgfont.truetype(self._fontName, 30)
+      drw = self._imgdraw.Draw(im2)
+      drw.text((650, 350), "%02i:%02i" % (t//60, t % 60),'white', font)
+      return self._np.array(im2)
 
     clip = self._vc(generator, duration=duration)
     clip.audio = audio
