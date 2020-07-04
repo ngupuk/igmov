@@ -12,7 +12,7 @@ on:
 
 jobs:
   deploy:
-
+    name: Build and Publish
     runs-on: ubuntu-latest
 
     steps:
@@ -32,3 +32,8 @@ jobs:
       run: |
         python setup.py sdist bdist_wheel
         twine upload dist/*
+    - name: Upload to Release
+      uses: AButler/upload-release-assets@v2.0
+      with: 
+        files: 'dist/*'
+        repo-token: ${{ secrets.GITHUB_TOKEN }}
