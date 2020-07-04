@@ -258,8 +258,9 @@ class template3(template1):
       pos = (x + 150, y + 150)
       n = (100, 100)
       mask = mask.resize(n)
+      logo2 = self._logo2.resize(n, self._pil.Image.ANTIALIAS)
       self._img.paste(mask, pos, mask)
-      self._img.paste(self._logo2.resize(n), pos, mask)
+      self._img.paste(logo2, pos, mask)
 
   def _drawTitle(self):
     x, y = (330, 240)
