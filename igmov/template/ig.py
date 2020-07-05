@@ -297,3 +297,69 @@ class template3(template1):
     clip.audio = audio
     clip.write_videofile(resultPath, fps=fps)
     return True
+
+class template4(template1):
+
+  _fontName = template3._fontName
+  def _drawLogo(self):
+    n = 150
+    logo = self._logo.resize((n, n), self._pil.Image.ANTIALIAS)
+    lx, ly = logo.size
+    x, y, r = (self._img.size[0] // 2 - ly // 2, 50, 20)
+    mask = self._pil.Image.new('RGBA', logo.size)
+    drw = self._imgdraw.Draw(mask)
+    drw.rectangle((r, 0, lx - r, ly), 'white')
+    drw.rectangle((0, r, lx, ly - r), 'white')
+    drw.ellipse((lx- 2*r,0, lx, r * 2), 'white')
+    drw.ellipse((0, 0, r * 2, r * 2), 'white')
+    drw.ellipse((0, ly - r * 2, r * 2, ly), 'white')
+    drw.ellipse((lx - r * 2, ly - r * 2, *logo.size), 'white')
+    self._img.paste(logo, (x, y), mask)
+
+  def _drawBg(self):
+    blur = self._imgfilter.GaussianBlur(10)
+    img = self._bg.filter(blur)
+    self._img.paste(img, (0, 0))
+    self._img = self._igmdraw.blackMask(self._img, .3)
+
+  def _drawTitle(self):
+    y = 300
+    drw = self._imgdraw.Draw(self._img)
+    W, H = self._img.size
+    msgs = self._title.split("\n")
+    HH = 0
+    for i, msg in enumerate(msgs):
+      font = self._imgfont.truetype(self._fontName, 50 + i * 100)
+      w, h = drw.textsize(msg, font)
+      drw.text(((W-w)//2, (HH + y)), msg, 'white', font, align='center')
+      HH += h
+    return self
+
+  def makeVideo(self, audioPath, resultPath):
+    """
+    Make video file
+    :param audioPath: string - path of audio source.
+    :param resultPath: string - path of video result.
+    """
+    self._gen()
+    anl = self._anl
+    im = self._img.copy()
+    sound, sr, fps, duration, audio = anl.getAudioData(audioPath)
+    L, R = anl.extract(sound)
+
+    def generator(t):
+      y = 125
+      sp_data = anl.getSound(t, L, sr, fps)
+      sp_data2 = anl.getSound(t, R, sr, fps)
+      data = anl.fft(sp_data, 200//5)
+      data2 = anl.fft(sp_data2, 200//5)
+      pos = (self._img.size[0] // 2 + 80, y)
+      pos2 = (self._img.size[0] // 2 - 80 - 200, y)
+      im2 = self._igmdraw.line(pos, im, data, 1.5, 5)
+      im2 = self._igmdraw.line(pos2, im2, data2[::-1], 1.5, 5)
+      return self._np.array(im2)
+
+    clip = self._vc(generator, duration=duration)
+    clip.audio = audio
+    clip.write_videofile(resultPath, fps=fps)
+    return True
