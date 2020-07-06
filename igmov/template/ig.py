@@ -37,7 +37,7 @@ class template1(object):
       now = t % self._vidBG.duration
       img = self._vidBG.get_frame(now)
       img = self._pil.Image.fromarray(img)
-      img = img.resize(self._img.size, self._pil.Image.ANTIALIAS)
+      img = self._igmdraw.rectangleFill(img, self._bg.size[0])
       self._bg = img
       self._gen()
     return self._img
@@ -110,7 +110,7 @@ class template1(object):
     :param path: string - path of the image source
     """
     bg = self._pil.Image.open(path)
-    self._bg = bg.resize(self._bg.size, self._pil.Image.ANTIALIAS)
+    self._bg = self._igmdraw.rectangleFill(bg, self._bg.size[0])
     return self
 
   def setTitle(self, text):
