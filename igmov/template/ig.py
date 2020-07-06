@@ -8,6 +8,8 @@ class template1(object):
   from PIL import ImageFilter as _imgfilter
   from PIL import ImageDraw as _imgdraw
   from PIL import ImageFont as _imgfont
+  import os as _os
+  import os.path as _path
 
   _img = _pil.Image.new('RGB', (800, 800))
   _bg = _pil.Image.new('RGB', _img.size)
@@ -18,6 +20,9 @@ class template1(object):
   _igLogo = _pil.Image.new('RGBA', (35, 35))
   _showSpotify = False
   _fontName = 'calibri.ttf'
+
+  if(not _path.exists('__temp__')):
+    _os.makedirs('__temp__')
 
   def show(self):
     """
@@ -111,7 +116,7 @@ class template1(object):
     """
     Show Spotify's Logo on frame.
     """
-    splogoPath = '__temp__.spotify_light.png'
+    splogoPath = '__temp__/spotify_light.png'
     try:
       splogo = self._pil.Image.open(splogoPath)
     except:
@@ -126,7 +131,7 @@ class template1(object):
     """
     Use Ngupuk's logo. Automatic download from internet.
     """
-    ngupukLogoPath = '__temp__.ngupuk.jpg'
+    ngupukLogoPath = '__temp__/ngupuk.jpg'
     try:
       ngLogo = self._pil.Image.open(ngupukLogoPath)
     except:
@@ -137,7 +142,7 @@ class template1(object):
     return self
 
   def useInstagramLogo(self, username='ngupuk.id'):
-    igLogoPath = '__temp__.ig.png'
+    igLogoPath = '__temp__/ig.png'
     try:
       igLogo = self._pil.Image.open(igLogoPath)
     except:
@@ -149,17 +154,21 @@ class template1(object):
     self._igLogo = igLogo.convert('RGBA')
     return self
 
-  def useRandomBg(self, keyword):
+  def useRandomBg(self, keyword, always_new=False):
     """
     Use random backgroun from unsplash.
     :param keyword: string - keyword of the image
     """
-    bgpath = "__temp__.bg_%s.jpg" % keyword
-    try:
-      bg = self._pil.Image.open(bgpath)
-    except:
+    bgpath = "__temp__/bg_%s.jpg" % keyword
+    if(always_new):
       self._igmdl.background(keyword, bgpath)
       bg = self._pil.Image.open(bgpath)
+    else:
+      try:
+        bg = self._pil.Image.open(bgpath)
+      except:
+        self._igmdl.background(keyword, bgpath)
+        bg = self._pil.Image.open(bgpath)
     bg = bg.resize(self._bg.size, self._pil.Image.ANTIALIAS)
     self._bg = bg
     return self
