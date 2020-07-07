@@ -1,5 +1,3 @@
 from setuptools import setup
 
-setup(
-    packages=['igmov', 'igmov.template']
-)
+setup(packages=['igmov', 'igmov.template'])

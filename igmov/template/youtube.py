@@ -135,16 +135,16 @@ class Template1():
       drw = self._imgDraw.Draw(im)
       drw.text((890, 260), "%02i:%02i" % time, font=font)
       data = self._anl.getSound(t, L, sr, fps)
-      im = self._drw.lineSpectrum(
-          (330, 300),
-          im,
-          data,
-          600,
-          mode='bottom',
-          scale=2,
-          spacing=4)
+      im = self._drw.lineSpectrum((330, 300),
+                                  im,
+                                  data,
+                                  600,
+                                  mode='bottom',
+                                  scale=2,
+                                  spacing=4)
       im = self._drw.progressBar((328, 280), im, 600, t / duration)
       return self._np.array(im)
+
     clip = self._vc(generator, duration=duration)
     clip.audio = audio
     clip.write_videofile(resultPath, fps=fps)
