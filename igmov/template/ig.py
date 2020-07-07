@@ -1,6 +1,7 @@
 class template1(object):
   import numpy as _np
   from moviepy.editor import VideoClip as _vc
+  from moviepy.editor import VideoFileClip as _vidFileClip
   import igmov.analyzer as _anl
   import igmov.draw as _igmdraw
   import igmov.dl as _igmdl
@@ -8,6 +9,8 @@ class template1(object):
   from PIL import ImageFilter as _imgfilter
   from PIL import ImageDraw as _imgdraw
   from PIL import ImageFont as _imgfont
+  import os as _os
+  import os.path as _path
 
   _img = _pil.Image.new('RGB', (800, 800))
   _bg = _pil.Image.new('RGB', _img.size)
@@ -18,6 +21,26 @@ class template1(object):
   _igLogo = _pil.Image.new('RGBA', (35, 35))
   _showSpotify = False
   _fontName = 'calibri.ttf'
+  _vidBG = _vc()
+  _isVidBG = False
+
+  if(not _path.exists('__temp__')):
+    _os.makedirs('__temp__')
+
+  def useVideoBG(self, path):
+    self._vidBG = self._vidFileClip(path)
+    self._isVidBG = True
+    return self
+
+  def _drawVidBG(self, t):
+    if(self._isVidBG):
+      now = t % self._vidBG.duration
+      img = self._vidBG.get_frame(now)
+      img = self._pil.Image.fromarray(img)
+      img = self._igmdraw.rectangleFill(img, self._bg.size[0])
+      self._bg = img
+      self._gen()
+    return self._img
 
   def show(self):
     """
@@ -87,7 +110,7 @@ class template1(object):
     :param path: string - path of the image source
     """
     bg = self._pil.Image.open(path)
-    self._bg = bg.resize(self._bg.size, self._pil.Image.ANTIALIAS)
+    self._bg = self._igmdraw.rectangleFill(bg, self._bg.size[0])
     return self
 
   def setTitle(self, text):
@@ -111,7 +134,7 @@ class template1(object):
     """
     Show Spotify's Logo on frame.
     """
-    splogoPath = '__temp__.spotify_light.png'
+    splogoPath = '__temp__/spotify_light.png'
     try:
       splogo = self._pil.Image.open(splogoPath)
     except:
@@ -126,7 +149,7 @@ class template1(object):
     """
     Use Ngupuk's logo. Automatic download from internet.
     """
-    ngupukLogoPath = '__temp__.ngupuk.jpg'
+    ngupukLogoPath = '__temp__/ngupuk.jpg'
     try:
       ngLogo = self._pil.Image.open(ngupukLogoPath)
     except:
@@ -137,7 +160,7 @@ class template1(object):
     return self
 
   def useInstagramLogo(self, username='ngupuk.id'):
-    igLogoPath = '__temp__.ig.png'
+    igLogoPath = '__temp__/ig.png'
     try:
       igLogo = self._pil.Image.open(igLogoPath)
     except:
@@ -149,17 +172,21 @@ class template1(object):
     self._igLogo = igLogo.convert('RGBA')
     return self
 
-  def useRandomBg(self, keyword):
+  def useRandomBg(self, keyword, always_new=False):
     """
     Use random backgroun from unsplash.
     :param keyword: string - keyword of the image
     """
-    bgpath = "__temp__.bg_%s.jpg" % keyword
-    try:
-      bg = self._pil.Image.open(bgpath)
-    except:
+    bgpath = "__temp__/bg_%s.jpg" % keyword
+    if(always_new):
       self._igmdl.background(keyword, bgpath)
       bg = self._pil.Image.open(bgpath)
+    else:
+      try:
+        bg = self._pil.Image.open(bgpath)
+      except:
+        self._igmdl.background(keyword, bgpath)
+        bg = self._pil.Image.open(bgpath)
     bg = bg.resize(self._bg.size, self._pil.Image.ANTIALIAS)
     self._bg = bg
     return self
@@ -172,11 +199,12 @@ class template1(object):
     """
     self._gen()
     anl = self._anl
-    im = self._img.copy()
     sound, sr, fps, duration, audio = anl.getAudioData(audioPath)
     L, _ = anl.extract(sound)
 
     def generator(t):
+      self._drawVidBG(t)
+      im = self._img.copy()
       sp_data = anl.getSound(t, L, sr, fps)
       pos = (200, 560)
       im2 = self._igmdraw.lineSpectrum(pos, im, sp_data, 380, 2, 5, 'bottom')
@@ -221,11 +249,12 @@ class template2(template1):
     :param resultPath: string - path of video result.
     """
     self._gen()
-    img = self._img.copy()
     sound, sr, fps, duration, audio = self._anl.getAudioData(audioPath)
     L, R = self._anl.extract(sound)
 
     def generator(t):
+      self._drawVidBG(t)
+      img = self._img.copy()
       Ldata = self._anl.getSound(t, L, sr, fps)
       Rdata = self._anl.getSound(t, R, sr, fps)
       Lfft = self._anl.fft(Ldata, 100)
@@ -279,11 +308,11 @@ class template3(template1):
     """
     self._gen()
     anl = self._anl
-    im = self._img.copy()
     sound, sr, fps, duration, audio = anl.getAudioData(audioPath)
     L, _ = anl.extract(sound)
 
     def generator(t):
+      im = self._img.copy()
       sp_data = anl.getSound(t, L, sr, fps)
       pos = (40, 580)
       im2 = self._igmdraw.lineSpectrum(pos, im, sp_data, 720, 1.5, 5)
@@ -343,11 +372,12 @@ class template4(template1):
     """
     self._gen()
     anl = self._anl
-    im = self._img.copy()
     sound, sr, fps, duration, audio = anl.getAudioData(audioPath)
     L, R = anl.extract(sound)
 
     def generator(t):
+      self._drawVidBG(t)
+      im = self._img.copy()
       y = 125
       sp_data = anl.getSound(t, L, sr, fps)
       sp_data2 = anl.getSound(t, R, sr, fps)

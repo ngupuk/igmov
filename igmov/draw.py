@@ -152,3 +152,18 @@ def rectangleFillCrop(image):
   y1 = 0 if y == n else (y - n) // 2
   image = image.crop((x1, y1, n + x1, n + y1))
   return image
+  
+def rectangleFill(image, w=None):
+  """
+  Make Fill Rectangle crop fill
+  """
+  from PIL import Image
+  im = image.copy()
+  x, y = im.size
+  xx, yy = x//2, y//2
+  n = min(x, y) // 2
+  im = im.crop((xx - n , yy - n, xx + n, yy + n))
+  if(w is not None):
+    return im.resize((w, w), Image.ANTIALIAS)
+  else:
+    return im
