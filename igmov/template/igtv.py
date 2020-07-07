@@ -1,4 +1,3 @@
-
 class Igtv1():
   import PIL.Image as _Img
   import PIL.ImageFilter as _Filter

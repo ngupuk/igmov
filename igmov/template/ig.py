@@ -24,7 +24,7 @@ class template1(object):
   _vidBG = _vc()
   _isVidBG = False
 
-  if(not _path.exists('__temp__')):
+  if (not _path.exists('__temp__')):
     _os.makedirs('__temp__')
 
   def useVideoBG(self, path):
@@ -33,7 +33,7 @@ class template1(object):
     return self
 
   def _drawVidBG(self, t):
-    if(self._isVidBG):
+    if (self._isVidBG):
       now = t % self._vidBG.duration
       img = self._vidBG.get_frame(now)
       img = self._pil.Image.fromarray(img)
@@ -66,7 +66,7 @@ class template1(object):
     drw = self._imgdraw.Draw(mask)
     drw.rectangle((x, y, x + lx + 20, y + ly + 90), fill='white')
     mask.paste(logo, (x + 10, y + 10))
-    self._img.paste(mask, (0, 0),  mask)
+    self._img.paste(mask, (0, 0), mask)
 
   def _drawTitle(self):
     x, y = 215, 480
@@ -78,7 +78,7 @@ class template1(object):
     x, y = self._img.size
     y -= (self._igLogo.size[1] + 20)
     x = 20
-    if(self._username):
+    if (self._username):
       font = self._imgfont.truetype(self._fontName, 24)
       self._img.paste(self._igLogo, (x, y), self._igLogo)
       drw = self._imgdraw.Draw(self._img)
@@ -178,7 +178,7 @@ class template1(object):
     :param keyword: string - keyword of the image
     """
     bgpath = "__temp__/bg_%s.jpg" % keyword
-    if(always_new):
+    if (always_new):
       self._igmdl.background(keyword, bgpath)
       bg = self._pil.Image.open(bgpath)
     else:
@@ -221,7 +221,6 @@ class template1(object):
 
 
 class template2(template1):
-
   def _drawLogo(self):
     x, y = self._img.size
     sx, sy = self._logo.size
@@ -269,6 +268,7 @@ class template2(template1):
     clip.write_videofile(resultPath, fps=fps)
     return True
 
+
 class template3(template1):
 
   _fontName = 'Gabriola.ttf'
@@ -283,7 +283,7 @@ class template3(template1):
     blur = self._imgfilter.GaussianBlur()
     mask = mask.filter(blur)
     self._img.paste(logo, (x, y), mask)
-    if(self._logo2):
+    if (self._logo2):
       pos = (x + 150, y + 150)
       n = (100, 100)
       mask = mask.resize(n)
@@ -316,10 +316,10 @@ class template3(template1):
       sp_data = anl.getSound(t, L, sr, fps)
       pos = (40, 580)
       im2 = self._igmdraw.lineSpectrum(pos, im, sp_data, 720, 1.5, 5)
-      im2 = self._igmdraw.progressBar((320, 380), im2, 350, t/duration)
+      im2 = self._igmdraw.progressBar((320, 380), im2, 350, t / duration)
       font = self._imgfont.truetype(self._fontName, 30)
       drw = self._imgdraw.Draw(im2)
-      drw.text((650, 350), "%02i:%02i" % (t//60, t % 60),'white', font)
+      drw.text((650, 350), "%02i:%02i" % (t // 60, t % 60), 'white', font)
       return self._np.array(im2)
 
     clip = self._vc(generator, duration=duration)
@@ -327,9 +327,11 @@ class template3(template1):
     clip.write_videofile(resultPath, fps=fps)
     return True
 
+
 class template4(template1):
 
   _fontName = template3._fontName
+
   def _drawLogo(self):
     n = 150
     logo = self._logo.resize((n, n), self._pil.Image.ANTIALIAS)
@@ -339,7 +341,7 @@ class template4(template1):
     drw = self._imgdraw.Draw(mask)
     drw.rectangle((r, 0, lx - r, ly), 'white')
     drw.rectangle((0, r, lx, ly - r), 'white')
-    drw.ellipse((lx- 2*r,0, lx, r * 2), 'white')
+    drw.ellipse((lx - 2 * r, 0, lx, r * 2), 'white')
     drw.ellipse((0, 0, r * 2, r * 2), 'white')
     drw.ellipse((0, ly - r * 2, r * 2, ly), 'white')
     drw.ellipse((lx - r * 2, ly - r * 2, *logo.size), 'white')
@@ -360,7 +362,7 @@ class template4(template1):
     for i, msg in enumerate(msgs):
       font = self._imgfont.truetype(self._fontName, 50 + i * 100)
       w, h = drw.textsize(msg, font)
-      drw.text(((W-w)//2, (HH + y)), msg, 'white', font, align='center')
+      drw.text(((W - w) // 2, (HH + y)), msg, 'white', font, align='center')
       HH += h
     return self
 
@@ -381,8 +383,8 @@ class template4(template1):
       y = 125
       sp_data = anl.getSound(t, L, sr, fps)
       sp_data2 = anl.getSound(t, R, sr, fps)
-      data = anl.fft(sp_data, 200//5)
-      data2 = anl.fft(sp_data2, 200//5)
+      data = anl.fft(sp_data, 200 // 5)
+      data2 = anl.fft(sp_data2, 200 // 5)
       pos = (self._img.size[0] // 2 + 80, y)
       pos2 = (self._img.size[0] // 2 - 80 - 200, y)
       im2 = self._igmdraw.line(pos, im, data, 1.5, 5)
